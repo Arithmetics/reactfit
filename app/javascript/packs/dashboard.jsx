@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LifetimeStats from './LifetimeStats';
 import Badges from './Badges';
+import TimeSeriesBarChart from './TimeSeriesBarChart';
 import dummyData from './dummyData';
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
@@ -20,11 +21,9 @@ class Dashboard extends React.Component {
       mode: 'cors'
     })
     .then(response => {
-      console.log(response.data)
       this.setState({[stateKey]: response.data})
     })
     .catch(error => console.log(error))
-
   }
 
   componentDidMount(){
@@ -40,11 +39,17 @@ class Dashboard extends React.Component {
 
       this.fetchFitbitData('https://api.fitbit.com/1/user/-/badges.json', fitbitToken, 'badges')
 
+      this.fetchFitbitData('https://api.fitbit.com/1/user/-/activities/steps/date/2018-02-15/1m.json', fitbitToken, 'steps')
+
+      this.fetchFitbitData('https://api.fitbit.com/1/user/-/activities/distance/date/2018-02-15/1m.json', fitbitToken, 'distance')
+
 
     }
   }
 
   render(){
+    console.log(this.state.steps["activities-steps"]);
+
     return(
       <div className="container">
           <header className="text-center">
@@ -70,13 +75,8 @@ class Dashboard extends React.Component {
 
 
           <div className="col-lg-6">
-            <div className="panel panel-default">
-              <div className="panel-heading">Steps</div>
-
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading">Distance (miles)</div>
-            </div>
+            <TimeSeriesBarChart data={this.state.steps["activities-steps"]} title="Steps" yMax={8000}  />
+            <TimeSeriesBarChart data={this.state.distance["activities-distance"]} title="Distance" yMax={10}  />
           </div>
 
           <div className="col-lg-2 col-lg-offset-1">

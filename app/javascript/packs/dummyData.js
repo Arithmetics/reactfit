@@ -17,7 +17,9 @@ const dummyData = {
                                     "steps":""}
                             }
                   },
-  badges: {"badges":[]}
+  badges: {"badges":[]},
+  steps: {"activities-steps": []},
+  distance: {"activities-distance": []}
 }
 
 export default dummyData;
