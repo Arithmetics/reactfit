@@ -14,20 +14,20 @@ class Dashboard extends React.Component {
 
   componentDidMount(){
     if(window.location.hash){
-      let fitbitToken = window.location.hash.slice(1).split("&")[0].replace("access_token=");
+      let fitbitToken = window.location.hash.slice(1).split("&")[0].replace("access_token=", "");
       console.log(fitbitToken);
 
-      // axios({
-      //   method: 'get',
-      //   url: 'https://api.fitbit.com/1/user/-/profile.json',
-      //   headers: { 'Authorization': 'Bearer ' + fitbitToken },
-      //   mode: 'cors'
-      // })
-      // .then(response => {
-      //   console.log(response);
-      //   this.setState({user: reponse.data, loggedIn: true})
-      // })
-      // .catch(error => console.log(error))
+      axios({
+        method: 'get',
+        url: 'https://api.fitbit.com/1/user/-/profile.json',
+        headers: { 'Authorization': 'Bearer ' + fitbitToken },
+        mode: 'cors'
+      })
+      .then(response => {
+        console.log(response);
+        this.setState({user: response.data.user, loggedIn: true})
+      })
+      .catch(error => console.log(error))
     }
   }
 
@@ -35,6 +35,7 @@ class Dashboard extends React.Component {
     return(
       <div className="container">
           <header className="text-center">
+            <span className="pull-right">{this.state.user.displayName}</span>
             <h1 className="page-header">React Fit</h1>
             <p className="lead">Personal fitness dashboard</p>
           </header>
@@ -46,6 +47,39 @@ class Dashboard extends React.Component {
             </a>
           </div>
         }
+
+        <div className="row">
+
+          <div className="col-lg-3">
+            <div className="panel panel-default">
+              <div className="panel-heading"><h4>Lifetime Stats</h4></div>
+              <div className="panel-body">
+              </div>
+            </div>
+            <div className="panel panel-default">
+              <div className="panel-heading"><h4>Badges</h4></div>
+              <div className="panel-body">
+              </div>
+            </div>
+          </div>
+
+
+          <div className="col-lg-6">
+            <div className="panel panel-default">
+              <div className="panel-heading">Steps</div>
+            </div>
+            <div className="panel panel-default">
+              <div className="panel-heading">Distance (miles)</div>
+            </div>
+          </div>
+
+          <div className="col-lg-2 col-lg-offset-1">
+            <div className="panel panel-default">
+              <div className="panel-heading">Your Friends</div>
+            </div>
+          </div>
+
+        </div>
       </div>
     )
   }
