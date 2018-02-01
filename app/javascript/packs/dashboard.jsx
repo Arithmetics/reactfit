@@ -1,33 +1,46 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import LifetimeStats from './LifetimeStats';
+import Badges from './Badges';
+import dummyData from './dummyData';
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 
 class Dashboard extends React.Component {
   constructor(props){
     super(props)
-    this.state = {
-      user: {},
-      loggedIn: false
-    }
+    this.state = dummyData;
+  }
+
+  fetchFitbitData(url, fitbitToken, stateKey){
+    axios({
+      method: 'get',
+      url: url,
+      headers: { 'Authorization': 'Bearer ' + fitbitToken },
+      mode: 'cors'
+    })
+    .then(response => {
+      console.log(response.data)
+      this.setState({[stateKey]: response.data})
+    })
+    .catch(error => console.log(error))
+
   }
 
   componentDidMount(){
     if(window.location.hash){
       let fitbitToken = window.location.hash.slice(1).split("&")[0].replace("access_token=", "");
-      console.log(fitbitToken);
 
-      axios({
-        method: 'get',
-        url: 'https://api.fitbit.com/1/user/-/profile.json',
-        headers: { 'Authorization': 'Bearer ' + fitbitToken },
-        mode: 'cors'
-      })
-      .then(response => {
-        console.log(response);
-        this.setState({user: response.data.user, loggedIn: true})
-      })
-      .catch(error => console.log(error))
+
+      this.setState({loggedIn: true})
+
+      this.fetchFitbitData('https://api.fitbit.com/1/user/-/profile.json', fitbitToken, 'user')
+
+      this.fetchFitbitData('https://api.fitbit.com/1/user/-/activities.json', fitbitToken, 'lifetimeStats')
+
+      this.fetchFitbitData('https://api.fitbit.com/1/user/-/badges.json', fitbitToken, 'badges')
+
+
     }
   }
 
@@ -35,7 +48,7 @@ class Dashboard extends React.Component {
     return(
       <div className="container">
           <header className="text-center">
-            <span className="pull-right">{this.state.user.displayName}</span>
+            <span className="pull-right">{this.state.user.user.displayName}</span>
             <h1 className="page-header">React Fit</h1>
             <p className="lead">Personal fitness dashboard</p>
           </header>
@@ -51,22 +64,15 @@ class Dashboard extends React.Component {
         <div className="row">
 
           <div className="col-lg-3">
-            <div className="panel panel-default">
-              <div className="panel-heading"><h4>Lifetime Stats</h4></div>
-              <div className="panel-body">
-              </div>
-            </div>
-            <div className="panel panel-default">
-              <div className="panel-heading"><h4>Badges</h4></div>
-              <div className="panel-body">
-              </div>
-            </div>
+            <LifetimeStats lifetimeStats={this.state.lifetimeStats}/>
+            <Badges badges={this.state.badges.badges}/>
           </div>
 
 
           <div className="col-lg-6">
             <div className="panel panel-default">
               <div className="panel-heading">Steps</div>
+
             </div>
             <div className="panel panel-default">
               <div className="panel-heading">Distance (miles)</div>
